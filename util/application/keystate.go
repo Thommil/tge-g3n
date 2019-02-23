@@ -1,7 +1,7 @@
 package application
 
 import (
-	"github.com/g3n/engine/window"
+	"github.com/thommil/tge-g3n/window"
 )
 
 // KeyState keeps track of the state of all keys.

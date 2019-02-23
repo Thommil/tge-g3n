@@ -5,9 +5,10 @@
 package core
 
 import (
-	"github.com/g3n/engine/gls"
-	"github.com/g3n/engine/math32"
 	"strings"
+
+	"github.com/thommil/tge-g3n/gls"
+	"github.com/thommil/tge-g3n/math32"
 )
 
 // INode is the interface for all node types.
@@ -459,19 +460,19 @@ func (n *Node) TranslateOnAxis(axis *math32.Vector3, dist float32) {
 // TranslateX translates the specified distance on the local X axis.
 func (n *Node) TranslateX(dist float32) {
 
-	n.TranslateOnAxis(&math32.Vector3{1,0,0}, dist)
+	n.TranslateOnAxis(&math32.Vector3{1, 0, 0}, dist)
 }
 
 // TranslateY translates the specified distance on the local Y axis.
 func (n *Node) TranslateY(dist float32) {
 
-	n.TranslateOnAxis(&math32.Vector3{0,1,0}, dist)
+	n.TranslateOnAxis(&math32.Vector3{0, 1, 0}, dist)
 }
 
 // TranslateZ translates the specified distance on the local Z axis.
 func (n *Node) TranslateZ(dist float32) {
 
-	n.TranslateOnAxis(&math32.Vector3{0,0,1}, dist)
+	n.TranslateOnAxis(&math32.Vector3{0, 0, 1}, dist)
 }
 
 // SetRotation sets the global rotation in Euler angles (radians).
@@ -554,19 +555,19 @@ func (n *Node) RotateOnAxis(axis *math32.Vector3, angle float32) {
 // RotateX rotates around the local X axis the specified angle in radians.
 func (n *Node) RotateX(x float32) {
 
-	n.RotateOnAxis(&math32.Vector3{1,0,0}, x)
+	n.RotateOnAxis(&math32.Vector3{1, 0, 0}, x)
 }
 
 // RotateY rotates around the local Y axis the specified angle in radians.
 func (n *Node) RotateY(y float32) {
 
-	n.RotateOnAxis(&math32.Vector3{0,1,0}, y)
+	n.RotateOnAxis(&math32.Vector3{0, 1, 0}, y)
 }
 
 // RotateZ rotates around the local Z axis the specified angle in radians.
 func (n *Node) RotateZ(z float32) {
 
-	n.RotateOnAxis(&math32.Vector3{0,0,1}, z)
+	n.RotateOnAxis(&math32.Vector3{0, 0, 1}, z)
 }
 
 // SetQuaternion sets the quaternion based on the specified quaternion unit multiples.

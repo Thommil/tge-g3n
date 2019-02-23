@@ -5,10 +5,12 @@
 package graphic
 
 import (
-	"github.com/g3n/engine/gls"
+	"fmt"
 	"strconv"
-	"github.com/g3n/engine/core"
-	"github.com/g3n/engine/math32"
+
+	"github.com/thommil/tge-g3n/core"
+	"github.com/thommil/tge-g3n/gls"
+	"github.com/thommil/tge-g3n/math32"
 )
 
 // MaxBoneInfluencers is the maximum number of bone influencers per vertex.
@@ -59,7 +61,7 @@ func (rm *RiggedMesh) RenderSetup(gs *gls.GLS, rinfo *core.RenderInfo) {
 	nMW := node.MatrixWorld()
 	err := invMat.GetInverse(&nMW)
 	if err != nil {
-		log.Error("Skeleton.BoneMatrices: inverting matrix failed!")
+		fmt.Println("ERROR : Skeleton.BoneMatrices: inverting matrix failed!")
 	}
 
 	// Transfer bone matrices

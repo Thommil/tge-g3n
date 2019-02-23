@@ -469,11 +469,11 @@ func (d *Decoder) decProfileCommonTechnique(start xml.StartElement, pc *ProfileC
 			continue
 		}
 		if child.Name.Local == "constant" {
-			log.Warn("CONSTANT not implemented yet")
+			fmt.Println("WARNING: CONSTANT not implemented yet")
 			continue
 		}
 		if child.Name.Local == "lambert" {
-			log.Warn("LAMBERT not implemented yet")
+			fmt.Println("WARNING: LAMBERT not implemented yet")
 			continue
 		}
 		if child.Name.Local == "phong" {

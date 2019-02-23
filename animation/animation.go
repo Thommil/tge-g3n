@@ -105,7 +105,7 @@ func (anim *Animation) Update(delta float32) {
 	}
 
 	// Check if input is less than minimum
-	anim.time = anim.time + delta * anim.speed
+	anim.time = anim.time + delta*anim.speed
 	if anim.time < anim.minTime {
 		return
 	}

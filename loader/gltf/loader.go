@@ -19,15 +19,15 @@ import (
 	"strings"
 	"unsafe"
 
-	"github.com/g3n/engine/camera"
-	"github.com/g3n/engine/core"
-	"github.com/g3n/engine/geometry"
-	"github.com/g3n/engine/gls"
-	"github.com/g3n/engine/graphic"
-	"github.com/g3n/engine/material"
-	"github.com/g3n/engine/math32"
-	"github.com/g3n/engine/texture"
-	"github.com/g3n/engine/animation"
+	"github.com/thommil/tge-g3n/animation"
+	"github.com/thommil/tge-g3n/camera"
+	"github.com/thommil/tge-g3n/core"
+	"github.com/thommil/tge-g3n/geometry"
+	"github.com/thommil/tge-g3n/gls"
+	"github.com/thommil/tge-g3n/graphic"
+	"github.com/thommil/tge-g3n/material"
+	"github.com/thommil/tge-g3n/math32"
+	"github.com/thommil/tge-g3n/texture"
 )
 
 // ParseJSON parses the glTF data from the specified JSON file
@@ -157,7 +157,7 @@ func (g *GLTF) LoadScene(sceneIdx int) (core.INode, error) {
 	if sceneIdx < 0 || sceneIdx >= len(g.Scenes) {
 		return nil, fmt.Errorf("invalid scene index")
 	}
-	log.Debug("Loading Scene %d", sceneIdx)
+	// log.Debug("Loading Scene %d", sceneIdx)
 	sceneData := g.Scenes[sceneIdx]
 
 	scene := core.NewNode()
@@ -188,7 +188,7 @@ func (g *GLTF) LoadNode(nodeIdx int) (core.INode, error) {
 		log.Debug("Fetching Node %d (cached)", nodeIdx)
 		return nodeData.cache, nil
 	}
-	log.Debug("Loading Node %d", nodeIdx)
+	// log.Debug("Loading Node %d", nodeIdx)
 
 	var in core.INode
 	var err error
@@ -224,7 +224,7 @@ func (g *GLTF) LoadNode(nodeIdx int) (core.INode, error) {
 		}
 		// Other cases, return empty node
 	} else {
-		log.Debug("Empty Node")
+		// log.Debug("Empty Node")
 		in = core.NewNode()
 	}
 
@@ -276,10 +276,10 @@ func (g *GLTF) LoadSkin(skinIdx int) (*graphic.Skeleton, error) {
 	skinData := g.Skins[skinIdx]
 	// Return cached if available
 	if skinData.cache != nil {
-		log.Debug("Fetching Skin %d (cached)", skinIdx)
+		// log.Debug("Fetching Skin %d (cached)", skinIdx)
 		return skinData.cache, nil
 	}
-	log.Debug("Loading Skin %d", skinIdx)
+	// log.Debug("Loading Skin %d", skinIdx)
 
 	// Create Skeleton and set it on Rigged mesh
 	skeleton := graphic.NewSkeleton()
@@ -297,7 +297,7 @@ func (g *GLTF) LoadSkin(skinIdx int) (*graphic.Skeleton, error) {
 			return nil, err
 		}
 		var ibm math32.Matrix4
-		ibmData.GetMatrix4(16 * i, &ibm)
+		ibmData.GetMatrix4(16*i, &ibm)
 		skeleton.AddBone(jointNode.GetNode(), &ibm)
 	}
 
@@ -327,7 +327,7 @@ func (g *GLTF) LoadAnimation(animIdx int) (*animation.Animation, error) {
 	if animIdx < 0 || animIdx >= len(g.Animations) {
 		return nil, fmt.Errorf("invalid animation index")
 	}
-	log.Debug("Loading Animation %d", animIdx)
+	// log.Debug("Loading Animation %d", animIdx)
 	animData := g.Animations[animIdx]
 
 	anim := animation.NewAnimation()
@@ -394,7 +394,7 @@ func (g *GLTF) LoadCamera(camIdx int) (core.INode, error) {
 	if camIdx < 0 || camIdx >= len(g.Cameras) {
 		return nil, fmt.Errorf("invalid camera index")
 	}
-	log.Debug("Loading Camera %d", camIdx)
+	// log.Debug("Loading Camera %d", camIdx)
 	camData := g.Cameras[camIdx]
 
 	if camData.Type == "perspective" {
@@ -437,7 +437,7 @@ func (g *GLTF) LoadMesh(meshIdx int) (core.INode, error) {
 		//log.Debug("Instancing Mesh %d (from cached)", meshIdx)
 		//return meshData.cache, nil
 	}
-	log.Debug("Loading Mesh %d", meshIdx)
+	// log.Debug("Loading Mesh %d", meshIdx)
 
 	var err error
 
@@ -608,7 +608,7 @@ func (g *GLTF) addAttributeToVBO(vbo *gls.VBO, attribName string, byteOffset uin
 
 	aType, ok := AttributeName[attribName]
 	if !ok {
-		log.Warn(fmt.Sprintf("Attribute %v is not supported!", attribName))
+		fmt.Fprintf("WARNING: Attribute %v is not supported!\n", attribName)
 		return
 	}
 	vbo.AddAttribOffset(aType, byteOffset)
@@ -688,10 +688,10 @@ func (g *GLTF) LoadMaterial(matIdx int) (material.IMaterial, error) {
 	matData := g.Materials[matIdx]
 	// Return cached if available
 	if matData.cache != nil {
-		log.Debug("Fetching Material %d (cached)", matIdx)
+		// log.Debug("Fetching Material %d (cached)", matIdx)
 		return matData.cache, nil
 	}
-	log.Debug("Loading Material %d", matIdx)
+	// log.Debug("Loading Material %d", matIdx)
 
 	var err error
 	var imat material.IMaterial
@@ -703,7 +703,7 @@ func (g *GLTF) LoadMaterial(matIdx int) (material.IMaterial, error) {
 				imat, err = g.loadMaterialCommon(extData)
 			} else if ext == KhrMaterialsUnlit {
 				//imat, err = g.loadMaterialUnlit(matData, extData)
-			//} else if ext == KhrMaterialsPbrSpecularGlossiness {
+				//} else if ext == KhrMaterialsPbrSpecularGlossiness {
 			} else {
 				return nil, fmt.Errorf("unsupported extension:%s", ext)
 			}
@@ -728,7 +728,7 @@ func (g *GLTF) LoadTexture(texIdx int) (*texture.Texture2D, error) {
 	}
 	texData := g.Textures[texIdx]
 	// NOTE: Textures can't be cached because they have their own uniforms
-	log.Debug("Loading Texture %d", texIdx)
+	// log.Debug("Loading Texture %d", texIdx)
 
 	// Load texture image
 	img, err := g.LoadImage(texData.Source)
@@ -751,7 +751,7 @@ func (g *GLTF) LoadTexture(texIdx int) (*texture.Texture2D, error) {
 // applySamplers applies the specified Sampler to the provided texture.
 func (g *GLTF) applySampler(samplerIdx int, tex *texture.Texture2D) error {
 
-	log.Debug("Applying Sampler %d", samplerIdx)
+	// log.Debug("Applying Sampler %d", samplerIdx)
 	// Check if provided sampler index is valid
 	if samplerIdx < 0 || samplerIdx >= len(g.Samplers) {
 		return fmt.Errorf("invalid sampler index")
@@ -800,10 +800,10 @@ func (g *GLTF) LoadImage(imgIdx int) (*image.RGBA, error) {
 	imgData := g.Images[imgIdx]
 	// Return cached if available
 	if imgData.cache != nil {
-		log.Debug("Fetching Image %d (cached)", imgIdx)
+		// log.Debug("Fetching Image %d (cached)", imgIdx)
 		return imgData.cache, nil
 	}
-	log.Debug("Loading Image %d", imgIdx)
+	// log.Debug("Loading Image %d", imgIdx)
 
 	var data []byte
 	var err error
@@ -1026,10 +1026,10 @@ func (g *GLTF) loadBufferView(bvIdx int) ([]byte, error) {
 	bvData := g.BufferViews[bvIdx]
 	// Return cached if available
 	if bvData.cache != nil {
-		log.Debug("Fetching BufferView %d (cached)", bvIdx)
+		// log.Debug("Fetching BufferView %d (cached)", bvIdx)
 		return bvData.cache, nil
 	}
-	log.Debug("Loading BufferView %d", bvIdx)
+	// log.Debug("Loading BufferView %d", bvIdx)
 
 	// Load buffer view buffer
 	buf, err := g.loadBuffer(bvData.Buffer)
@@ -1062,10 +1062,10 @@ func (g *GLTF) loadBuffer(bufIdx int) ([]byte, error) {
 	bufData := &g.Buffers[bufIdx]
 	// Return cached if available
 	if bufData.cache != nil {
-		log.Debug("Fetching Buffer %d (cached)", bufIdx)
+		// log.Debug("Fetching Buffer %d (cached)", bufIdx)
 		return bufData.cache, nil
 	}
-	log.Debug("Loading Buffer %d", bufIdx)
+	// log.Debug("Loading Buffer %d", bufIdx)
 
 	// If buffer URI use the chunk data field
 	if bufData.Uri == "" {
@@ -1091,14 +1091,14 @@ func (g *GLTF) loadBuffer(bufIdx int) ([]byte, error) {
 	}
 	// Cache buffer data
 	g.Buffers[bufIdx].cache = data
-	log.Debug("cache data:%v", len(bufData.cache))
+	// log.Debug("cache data:%v", len(bufData.cache))
 	return data, nil
 }
 
 // loadFileBytes loads the file with specified path as a byte array.
 func (g *GLTF) loadFileBytes(uri string) ([]byte, error) {
 
-	log.Debug("Loading File: %v", uri)
+	// log.Debug("Loading File: %v", uri)
 
 	fpath := filepath.Join(g.path, uri)
 	f, err := os.Open(fpath)

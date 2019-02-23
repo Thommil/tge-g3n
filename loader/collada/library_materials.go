@@ -124,11 +124,11 @@ func (d *Decoder) decInstanceEffect(start xml.StartElement, ie *InstanceEffect) 
 			return err
 		}
 		if child.Name.Local == "technique_hint setparam" {
-			log.Warn("<technique_hint> not implemented")
+			fmt.Println("WARNING: <technique_hint> not implemented")
 			continue
 		}
 		if child.Name.Local == "setparam" {
-			log.Warn("<setparam> not implemented")
+			fmt.Println("WARNING: <setparam> not implemented")
 			continue
 		}
 	}

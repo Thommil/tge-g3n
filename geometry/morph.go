@@ -5,19 +5,20 @@
 package geometry
 
 import (
-	"github.com/g3n/engine/gls"
-	"github.com/g3n/engine/math32"
-	"strconv"
 	"sort"
+	"strconv"
+
+	"github.com/thommil/tge-g3n/gls"
+	"github.com/thommil/tge-g3n/math32"
 )
 
 // MorphGeometry represents a base geometry and its morph targets.
 type MorphGeometry struct {
-	baseGeometry  *Geometry   // The base geometry
-	targets       []*Geometry // The morph target geometries (containing deltas)
-	weights       []float32   // The weights for each morph target
-	uniWeights    gls.Uniform // Texture unit uniform location cache
-	morphGeom     *Geometry   // Cache of the last CPU-morphed geometry
+	baseGeometry *Geometry   // The base geometry
+	targets      []*Geometry // The morph target geometries (containing deltas)
+	weights      []float32   // The weights for each morph target
+	uniWeights   gls.Uniform // Texture unit uniform location cache
+	morphGeom    *Geometry   // Cache of the last CPU-morphed geometry
 }
 
 // MaxActiveMorphTargets is the maximum number of active morph targets.

@@ -5,8 +5,8 @@
 package geometry
 
 import (
-	"github.com/g3n/engine/gls"
-	"github.com/g3n/engine/math32"
+	"github.com/thommil/tge-g3n/gls"
+	"github.com/thommil/tge-g3n/math32"
 )
 
 // Box represents the geometry of a rectangular cuboid.
@@ -145,7 +145,7 @@ func NewSegmentedBox(width, height, length float32, widthSegments, heightSegment
 	box.boundingBoxValid = true
 
 	// Update bounding sphere
-	box.boundingSphere.Radius = math32.Sqrt(math32.Pow(width/2,2) + math32.Pow(height/2,2) + math32.Pow(length/2,2))
+	box.boundingSphere.Radius = math32.Sqrt(math32.Pow(width/2, 2) + math32.Pow(height/2, 2) + math32.Pow(length/2, 2))
 	box.boundingSphereValid = true
 
 	// Update area

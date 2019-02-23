@@ -5,8 +5,8 @@
 package geometry
 
 import (
-	"github.com/g3n/engine/gls"
-	"github.com/g3n/engine/math32"
+	"github.com/thommil/tge-g3n/gls"
+	"github.com/thommil/tge-g3n/math32"
 )
 
 // Plane represents a plane geometry
@@ -76,7 +76,7 @@ func NewPlane(width, height float32, widthSegments, heightSegments int) *Plane {
 	plane.AddVBO(gls.NewVBO(uvs).AddAttrib(gls.VertexTexcoord))
 
 	// Update area
-	plane.area = width*height
+	plane.area = width * height
 	plane.areaValid = true
 
 	// Update volume

@@ -5,14 +5,15 @@
 package renderer
 
 import (
-	"github.com/g3n/engine/camera"
-	"github.com/g3n/engine/core"
-	"github.com/g3n/engine/gls"
-	"github.com/g3n/engine/graphic"
-	"github.com/g3n/engine/gui"
-	"github.com/g3n/engine/light"
-	"github.com/g3n/engine/math32"
 	"sort"
+
+	"github.com/thommil/tge-g3n/camera"
+	"github.com/thommil/tge-g3n/core"
+	"github.com/thommil/tge-g3n/gls"
+	"github.com/thommil/tge-g3n/graphic"
+	"github.com/thommil/tge-g3n/gui"
+	"github.com/thommil/tge-g3n/light"
+	"github.com/thommil/tge-g3n/math32"
 )
 
 // Renderer renders a 3D scene and/or a 2D GUI on the current window.
@@ -307,7 +308,7 @@ func (r *Renderer) renderScene(iscene core.INode, icam camera.ICamera) error {
 				rO1 := gr1.RenderOrder()
 				rO2 := gr2.RenderOrder()
 				if rO1 != rO2 {
-					return  rO1 < rO2
+					return rO1 < rO2
 				}
 
 				mvm1 := gr1.ModelViewMatrix()

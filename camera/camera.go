@@ -6,8 +6,8 @@
 package camera
 
 import (
-	"github.com/g3n/engine/core"
-	"github.com/g3n/engine/math32"
+	"github.com/thommil/tge-g3n/core"
+	"github.com/thommil/tge-g3n/math32"
 )
 
 // ICamera is interface for all camera types.

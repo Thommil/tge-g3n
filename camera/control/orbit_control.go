@@ -5,11 +5,10 @@
 package control
 
 import (
-	"github.com/g3n/engine/camera"
-	"github.com/g3n/engine/math32"
-	"github.com/g3n/engine/util/logger"
-	"github.com/g3n/engine/window"
 	"math"
+
+	"github.com/thommil/tge-g3n/camera"
+	"github.com/thommil/tge-g3n/math32"
 )
 
 // OrbitControl is a camera controller that allows orbiting a center point while looking at it.
@@ -60,9 +59,6 @@ const (
 	stateZoom
 	statePan
 )
-
-// Package logger
-var log = logger.New("ORBIT", logger.Default)
 
 // NewOrbitControl creates and returns a pointer to a new orbito control for
 // the specified camera and window
@@ -250,7 +246,6 @@ func (oc *OrbitControl) updateRotate2() {
 	// Adds target back get final position
 	position = target
 	position.Add(&vdir)
-	log.Debug("orbit set position")
 	oc.cam.SetPositionVec(&position)
 	oc.cam.LookAt(&target)
 

@@ -5,7 +5,9 @@
 package gls
 
 import (
-	"github.com/g3n/engine/math32"
+	"fmt"
+
+	"github.com/thommil/tge-g3n/math32"
 )
 
 // VBO abstracts an OpenGL Vertex Buffer Object.
@@ -303,7 +305,7 @@ func (vbo *VBO) Transfer(gs *GLS) {
 			// Get attribute location in the current program
 			loc := gs.prog.GetAttribLocation(attrib.Name)
 			if loc < 0 {
-				log.Warn("Attribute not found: %v", attrib.Name)
+				fmt.Printf("WARNING : Attribute not found: %v", attrib.Name)
 				continue
 			}
 			// Enables attribute and sets its stride and offset in the buffer
@@ -376,15 +378,15 @@ func (vbo *VBO) ReadTripleVectors3(attribType AttribType, cb func(vec1, vec2, ve
 	offset := vbo.AttribOffset(attribType)
 	positions := vbo.Buffer()
 
-	doubleStride := 2*stride
-	loopStride := 3*stride
+	doubleStride := 2 * stride
+	loopStride := 3 * stride
 
 	// Call callback for each vector3 triple
 	var vec1, vec2, vec3 math32.Vector3
 	for i := offset; i < positions.Size(); i += loopStride {
 		positions.GetVector3(i, &vec1)
-		positions.GetVector3(i + stride, &vec2)
-		positions.GetVector3(i + doubleStride, &vec3)
+		positions.GetVector3(i+stride, &vec2)
+		positions.GetVector3(i+doubleStride, &vec3)
 		brk := cb(vec1, vec2, vec3)
 		if brk {
 			break

@@ -5,8 +5,9 @@
 package core
 
 import (
-	"github.com/g3n/engine/math32"
 	"sort"
+
+	"github.com/thommil/tge-g3n/math32"
 )
 
 // Raycaster represents an empty object that can cast rays and check for ray intersections.

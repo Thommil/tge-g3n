@@ -5,9 +5,10 @@
 package geometry
 
 import (
-	"github.com/g3n/engine/gls"
-	"github.com/g3n/engine/math32"
 	"math"
+
+	"github.com/thommil/tge-g3n/gls"
+	"github.com/thommil/tge-g3n/math32"
 )
 
 // Circle represents the geometry of a filled circle (i.e. a disk)

@@ -9,17 +9,17 @@ import (
 	"runtime/trace"
 	"time"
 
-	"github.com/g3n/engine/audio/al"
-	"github.com/g3n/engine/audio/vorbis"
-	"github.com/g3n/engine/camera"
-	"github.com/g3n/engine/camera/control"
-	"github.com/g3n/engine/core"
-	"github.com/g3n/engine/gls"
-	"github.com/g3n/engine/gui"
-	"github.com/g3n/engine/math32"
-	"github.com/g3n/engine/renderer"
-	"github.com/g3n/engine/util/logger"
-	"github.com/g3n/engine/window"
+	"github.com/thommil/tge-g3n/audio/al"
+	"github.com/thommil/tge-g3n/audio/vorbis"
+	"github.com/thommil/tge-g3n/camera"
+	"github.com/thommil/tge-g3n/camera/control"
+	"github.com/thommil/tge-g3n/core"
+	"github.com/thommil/tge-g3n/gls"
+	"github.com/thommil/tge-g3n/gui"
+	"github.com/thommil/tge-g3n/math32"
+	"github.com/thommil/tge-g3n/renderer"
+	"github.com/thommil/tge-g3n/util/logger"
+	"github.com/thommil/tge-g3n/window"
 )
 
 // Application is a standard application object which can be used as a base for G3N applications.
