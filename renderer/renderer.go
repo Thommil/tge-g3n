@@ -11,7 +11,6 @@ import (
 	"github.com/thommil/tge-g3n/core"
 	"github.com/thommil/tge-g3n/gls"
 	"github.com/thommil/tge-g3n/graphic"
-	"github.com/thommil/tge-g3n/gui"
 	"github.com/thommil/tge-g3n/light"
 	"github.com/thommil/tge-g3n/math32"
 )
@@ -23,8 +22,6 @@ type Renderer struct {
 	stats        Stats                      // Renderer statistics
 	prevStats    Stats                      // Renderer statistics for previous frame
 	scene        core.INode                 // Node containing 3D scene to render
-	panelGui     gui.IPanel                 // Panel containing GUI to render
-	panel3D      gui.IPanel                 // Panel which contains the 3D scene
 	ambLights    []*light.Ambient           // Array of ambient lights for last scene
 	dirLights    []*light.Directional       // Array of directional lights for last scene
 	pointLights  []*light.Point             // Array of point
@@ -37,9 +34,7 @@ type Renderer struct {
 	rinfo        core.RenderInfo            // Preallocated Render info
 	specs        ShaderSpecs                // Preallocated Shader specs
 	sortObjects  bool                       // Flag indicating whether objects should be sorted before rendering
-	redrawGui    bool                       // Flag indicating the gui must be redrawn completely
 	rendered     bool                       // Flag indicating if anything was rendered
-	panList      []gui.IPanel               // list of panels to render
 	frameBuffers int                        // Number of frame buffers
 	frameCount   int                        // Current number of frame buffers to write
 }
@@ -69,7 +64,6 @@ func NewRenderer(gs *gls.GLS) *Renderer {
 	r.cgraphics = make([]*graphic.Graphic, 0)
 	r.grmatsOpaque = make([]*graphic.GraphicMaterial, 0)
 	r.grmatsTransp = make([]*graphic.GraphicMaterial, 0)
-	r.panList = make([]gui.IPanel, 0)
 	r.frameBuffers = 2
 	r.sortObjects = true
 	return r
@@ -99,28 +93,6 @@ func (r *Renderer) AddShader(name, source string) {
 func (r *Renderer) AddProgram(name, vertex, frag string, others ...string) {
 
 	r.shaman.AddProgram(name, vertex, frag, others...)
-}
-
-// SetGui sets the gui panel which contains the Gui to render.
-// If set to nil, no Gui will be rendered.
-func (r *Renderer) SetGui(gui gui.IPanel) {
-
-	r.panelGui = gui
-}
-
-// SetGuiPanel3D sets the gui panel inside which the 3D scene is shown.
-// This informs the renderer that the Gui elements over this panel
-// must be redrawn even if they didn't change.
-// This panel panel must not be renderable, otherwise it will cover the 3D scene.
-func (r *Renderer) SetGuiPanel3D(panel3D gui.IPanel) {
-
-	r.panel3D = panel3D
-}
-
-// Panel3D returns the current gui panel over the 3D scene.
-func (r *Renderer) Panel3D() gui.IPanel {
-
-	return r.panel3D
 }
 
 // SetScene sets the 3D scene to be rendered.
@@ -153,7 +125,6 @@ func (r *Renderer) ObjectSorting() bool {
 // Returns an indication if anything was rendered and an error.
 func (r *Renderer) Render(icam camera.ICamera) (bool, error) {
 
-	r.redrawGui = false
 	r.rendered = false
 	r.stats = Stats{}
 
@@ -164,13 +135,7 @@ func (r *Renderer) Render(icam camera.ICamera) (bool, error) {
 			return r.rendered, err
 		}
 	}
-	// Renders the Gui over the 3D scene
-	if r.panelGui != nil {
-		err := r.renderGui()
-		if err != nil {
-			return r.rendered, err
-		}
-	}
+
 	r.prevStats = r.stats
 	return r.rendered, nil
 }
@@ -343,30 +308,6 @@ func (r *Renderer) renderScene(iscene core.INode, icam camera.ICamera) error {
 	// If there is graphic material to render or there was in the previous frame
 	// it is necessary to clear the screen.
 	if len(r.grmatsOpaque) > 0 || len(r.grmatsTransp) > 0 || r.prevStats.Graphics > 0 {
-		// If the 3D scene to draw is to be confined to user specified panel
-		// sets scissor to avoid erasing gui elements outside of this panel
-		if r.panel3D != nil {
-			pos := r.panel3D.GetPanel().Pospix()
-			width, height := r.panel3D.GetPanel().Size()
-
-			// Get scale of window (for HiDPI support)
-			sX64, sY64 := r.panel3D.Root().Window().Scale()
-			sX := float32(sX64)
-			sY := float32(sY64)
-
-			// Modify position and height of scissor according to window scale (for HiDPI support)
-			width *= sX
-			height *= sY
-			pos.X *= sX
-			pos.Y *= sY
-
-			_, _, _, viewheight := r.gs.GetViewport()
-			r.gs.Enable(gls.SCISSOR_TEST)
-			r.gs.Scissor(int32(pos.X), viewheight-int32(pos.Y)-int32(height), uint32(width), uint32(height))
-		} else {
-			r.gs.Disable(gls.SCISSOR_TEST)
-			r.redrawGui = true
-		}
 		// Clears the area inside the current scissor
 		r.gs.Clear(gls.DEPTH_BUFFER_BIT | gls.STENCIL_BUFFER_BIT | gls.COLOR_BUFFER_BIT)
 		r.rendered = true
@@ -432,183 +373,4 @@ func (r *Renderer) renderScene(iscene core.INode, icam camera.ICamera) error {
 	renderGraphicMaterials(r.grmatsTransp) // Render transparent objects (back to front)
 
 	return err
-}
-
-// renderGui renders the Gui
-func (r *Renderer) renderGui() error {
-
-	// If no 3D scene was rendered sets Gui panels as renderable for background
-	// User must define the colors
-	if (len(r.rgraphics) == 0) && (len(r.cgraphics) == 0) {
-		r.panelGui.SetRenderable(true)
-		if r.panel3D != nil {
-			r.panel3D.SetRenderable(true)
-		}
-	} else {
-		r.panelGui.SetRenderable(false)
-		if r.panel3D != nil {
-			r.panel3D.SetRenderable(false)
-		}
-	}
-
-	// Clears list of panels to render
-	r.panList = r.panList[0:0]
-	// Redraw all GUI elements elements (panel3D == nil and 3D scene drawn)
-	if r.redrawGui {
-		r.appendPanel(r.panelGui)
-		// Redraw GUI elements only if changed
-		// Set the number of frame buffers to draw these changes
-	} else if r.checkChanged(r.panelGui) {
-		r.appendPanel(r.panelGui)
-		r.frameCount = r.frameBuffers
-		// No change, but need to update frame buffers
-	} else if r.frameCount > 0 {
-		r.appendPanel(r.panelGui)
-		// No change, draw only panels over 3D if any
-	} else {
-		r.getPanelsOver3D()
-	}
-	if len(r.panList) == 0 {
-		return nil
-	}
-
-	// Updates panels bounds and relative positions
-	r.panelGui.GetPanel().UpdateMatrixWorld()
-	// Disable the scissor test which could have been set by the 3D scene renderer
-	// and then clear the depth buffer, so the panels will be rendered over the 3D scene.
-	r.gs.Disable(gls.SCISSOR_TEST)
-	r.gs.Clear(gls.DEPTH_BUFFER_BIT)
-
-	// Render panels
-	for i := 0; i < len(r.panList); i++ {
-		err := r.renderPanel(r.panList[i])
-		if err != nil {
-			return err
-		}
-	}
-	r.frameCount--
-	r.rendered = true
-	return nil
-}
-
-// getPanelsOver3D builds list of panels over 3D to be rendered
-func (r *Renderer) getPanelsOver3D() {
-
-	// If panel3D not set or renderable, nothing to do
-	if r.panel3D == nil || r.panel3D.Renderable() {
-		return
-	}
-
-	// Internal recursive function to check if any child of the
-	// specified panel is unbounded and over 3D.
-	// If it is, it is inserted in the list of panels to render.
-	var checkUnbounded func(pan *gui.Panel)
-	checkUnbounded = func(pan *gui.Panel) {
-
-		for i := 0; i < len(pan.Children()); i++ {
-			child := pan.Children()[i].(gui.IPanel).GetPanel()
-			if !child.Bounded() && r.checkPanelOver3D(child) {
-				r.appendPanel(child)
-				continue
-			}
-			checkUnbounded(child)
-		}
-	}
-
-	// For all children of the Gui, checks if it is over the 3D panel
-	children := r.panelGui.GetPanel().Children()
-	for i := 0; i < len(children); i++ {
-		pan := children[i].(gui.IPanel).GetPanel()
-		if !pan.Visible() {
-			continue
-		}
-		if r.checkPanelOver3D(pan) {
-			r.appendPanel(pan)
-			continue
-		}
-		// Current child is not over 3D but can have an unbounded child which is
-		checkUnbounded(pan)
-	}
-}
-
-// renderPanel renders the specified panel and all its children
-// and then sets the panel as not changed.
-func (r *Renderer) renderPanel(ipan gui.IPanel) error {
-
-	// If panel not visible, ignore it and all its children
-	pan := ipan.GetPanel()
-	if !pan.Visible() {
-		pan.SetChanged(false)
-		return nil
-	}
-	// If panel is renderable, renders it
-	if pan.Renderable() {
-		// Sets shader program for the panel's material
-		grmat := pan.GetGraphic().Materials()[0]
-		mat := grmat.IMaterial().GetMaterial()
-		r.specs.Name = mat.Shader()
-		r.specs.ShaderUnique = mat.ShaderUnique()
-		_, err := r.shaman.SetProgram(&r.specs)
-		if err != nil {
-			return err
-		}
-		// Render this panel's graphic material
-		grmat.Render(r.gs, &r.rinfo)
-		r.stats.Panels++
-	}
-	pan.SetChanged(false)
-	// Renders this panel children
-	for i := 0; i < len(pan.Children()); i++ {
-		err := r.renderPanel(pan.Children()[i].(gui.IPanel))
-		if err != nil {
-			return err
-		}
-	}
-	return nil
-}
-
-// appendPanel appends the specified panel to the list of panels to render.
-// Currently there is no need to check for duplicates.
-func (r *Renderer) appendPanel(ipan gui.IPanel) {
-
-	r.panList = append(r.panList, ipan)
-}
-
-// checkChanged checks if the specified panel or any of its children is changed
-func (r *Renderer) checkChanged(ipan gui.IPanel) bool {
-
-	// Unbounded panels are checked even if not visible
-	pan := ipan.GetPanel()
-	if !pan.Bounded() && pan.Changed() {
-		pan.SetChanged(false)
-		return true
-	}
-	// Ignore invisible panel and its children
-	if !pan.Visible() {
-		return false
-	}
-	if pan.Changed() && pan.Renderable() {
-		return true
-	}
-	for i := 0; i < len(pan.Children()); i++ {
-		res := r.checkChanged(pan.Children()[i].(gui.IPanel))
-		if res {
-			return res
-		}
-	}
-	return false
-}
-
-// checkPanelOver3D checks if the specified panel is over
-// the area where the 3D scene will be rendered.
-func (r *Renderer) checkPanelOver3D(ipan gui.IPanel) bool {
-
-	pan := ipan.GetPanel()
-	if !pan.Visible() {
-		return false
-	}
-	if r.panel3D.GetPanel().Intersects(pan) {
-		return true
-	}
-	return false
 }

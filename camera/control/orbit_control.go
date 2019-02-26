@@ -33,7 +33,6 @@ type OrbitControl struct {
 	cam         *camera.Camera
 	camPersp    *camera.Perspective
 	camOrtho    *camera.Orthographic
-	win         window.IWindow
 	position0   math32.Vector3 // Initial camera position
 	target0     math32.Vector3 // Initial camera target position
 	state       int            // current active state
@@ -62,11 +61,10 @@ const (
 
 // NewOrbitControl creates and returns a pointer to a new orbito control for
 // the specified camera and window
-func NewOrbitControl(icam camera.ICamera, win window.IWindow) *OrbitControl {
+func NewOrbitControl(icam camera.ICamera) *OrbitControl {
 
 	oc := new(OrbitControl)
 	oc.icam = icam
-	oc.win = win
 
 	oc.cam = icam.GetCamera()
 	if persp, ok := icam.(*camera.Perspective); ok {
@@ -98,23 +96,7 @@ func NewOrbitControl(icam camera.ICamera, win window.IWindow) *OrbitControl {
 	oc.position0 = oc.cam.Position()
 	oc.target0 = oc.cam.Target()
 
-	// Subscribe to events
-	oc.win.SubscribeID(window.OnMouseUp, &oc.subsEvents, oc.onMouse)
-	oc.win.SubscribeID(window.OnMouseDown, &oc.subsEvents, oc.onMouse)
-	oc.win.SubscribeID(window.OnScroll, &oc.subsEvents, oc.onScroll)
-	oc.win.SubscribeID(window.OnKeyDown, &oc.subsEvents, oc.onKey)
 	return oc
-}
-
-// Dispose unsubscribes from all events
-func (oc *OrbitControl) Dispose() {
-
-	// Unsubscribe to event handlers
-	oc.win.UnsubscribeID(window.OnMouseUp, &oc.subsEvents)
-	oc.win.UnsubscribeID(window.OnMouseDown, &oc.subsEvents)
-	oc.win.UnsubscribeID(window.OnScroll, &oc.subsEvents)
-	oc.win.UnsubscribeID(window.OnKeyDown, &oc.subsEvents)
-	oc.win.UnsubscribeID(window.OnCursor, &oc.subsPos)
 }
 
 // Reset to initial camera position
@@ -126,9 +108,7 @@ func (oc *OrbitControl) Reset() {
 }
 
 // Pan the camera and target by the specified deltas
-func (oc *OrbitControl) Pan(deltaX, deltaY float32) {
-
-	width, height := oc.win.Size()
+func (oc *OrbitControl) Pan(width, height int, deltaX, deltaY float32) {
 	oc.pan(deltaX, deltaY, width, height)
 	oc.updatePan()
 }
@@ -330,148 +310,148 @@ func (oc *OrbitControl) updateZoom() {
 // Called when mouse button event is received
 func (oc *OrbitControl) onMouse(evname string, ev interface{}) {
 
-	// If control not enabled ignore event
-	if !oc.Enabled {
-		return
-	}
+	// // If control not enabled ignore event
+	// if !oc.Enabled {
+	// 	return
+	// }
 
-	mev := ev.(*window.MouseEvent)
-	// Mouse button pressed
-	if mev.Action == window.Press {
-		// Left button pressed sets Rotate state
-		if mev.Button == window.MouseButtonLeft {
-			if !oc.EnableRotate {
-				return
-			}
-			oc.state = stateRotate
-			oc.rotateStart.Set(float32(mev.Xpos), float32(mev.Ypos))
-		} else
-		// Middle button pressed sets Zoom state
-		if mev.Button == window.MouseButtonMiddle {
-			if !oc.EnableZoom {
-				return
-			}
-			oc.state = stateZoom
-			oc.zoomStart = float32(mev.Ypos)
-		} else
-		// Right button pressed sets Pan state
-		if mev.Button == window.MouseButtonRight {
-			if !oc.EnablePan {
-				return
-			}
-			oc.state = statePan
-			oc.panStart.Set(float32(mev.Xpos), float32(mev.Ypos))
-		}
-		// If a valid state is set requests mouse position events
-		if oc.state != stateNone {
-			oc.win.SubscribeID(window.OnCursor, &oc.subsPos, oc.onCursorPos)
-		}
-		return
-	}
+	// mev := ev.(*window.MouseEvent)
+	// // Mouse button pressed
+	// if mev.Action == window.Press {
+	// 	// Left button pressed sets Rotate state
+	// 	if mev.Button == window.MouseButtonLeft {
+	// 		if !oc.EnableRotate {
+	// 			return
+	// 		}
+	// 		oc.state = stateRotate
+	// 		oc.rotateStart.Set(float32(mev.Xpos), float32(mev.Ypos))
+	// 	} else
+	// 	// Middle button pressed sets Zoom state
+	// 	if mev.Button == window.MouseButtonMiddle {
+	// 		if !oc.EnableZoom {
+	// 			return
+	// 		}
+	// 		oc.state = stateZoom
+	// 		oc.zoomStart = float32(mev.Ypos)
+	// 	} else
+	// 	// Right button pressed sets Pan state
+	// 	if mev.Button == window.MouseButtonRight {
+	// 		if !oc.EnablePan {
+	// 			return
+	// 		}
+	// 		oc.state = statePan
+	// 		oc.panStart.Set(float32(mev.Xpos), float32(mev.Ypos))
+	// 	}
+	// 	// If a valid state is set requests mouse position events
+	// 	if oc.state != stateNone {
+	// 		oc.win.SubscribeID(window.OnCursor, &oc.subsPos, oc.onCursorPos)
+	// 	}
+	// 	return
+	// }
 
-	// Mouse button released
-	if mev.Action == window.Release {
-		oc.win.UnsubscribeID(window.OnCursor, &oc.subsPos)
-		oc.state = stateNone
-	}
+	// // Mouse button released
+	// if mev.Action == window.Release {
+	// 	oc.win.UnsubscribeID(window.OnCursor, &oc.subsPos)
+	// 	oc.state = stateNone
+	// }
 }
 
 // Called when cursor position event is received
 func (oc *OrbitControl) onCursorPos(evname string, ev interface{}) {
 
-	// If control not enabled ignore event
-	if !oc.Enabled {
-		return
-	}
+	// // If control not enabled ignore event
+	// if !oc.Enabled {
+	// 	return
+	// }
 
-	mev := ev.(*window.CursorEvent)
-	// Rotation
-	if oc.state == stateRotate {
-		oc.rotateEnd.Set(float32(mev.Xpos), float32(mev.Ypos))
-		oc.rotateDelta.SubVectors(&oc.rotateEnd, &oc.rotateStart)
-		oc.rotateStart = oc.rotateEnd
-		// rotating across whole screen goes 360 degrees around
-		width, height := oc.win.Size()
-		oc.RotateLeft(2 * math32.Pi * oc.rotateDelta.X / float32(width) * oc.RotateSpeed)
-		// rotating up and down along whole screen attempts to go 360, but limited to 180
-		oc.RotateUp(2 * math32.Pi * oc.rotateDelta.Y / float32(height) * oc.RotateSpeed)
-		return
-	}
+	// mev := ev.(*window.CursorEvent)
+	// // Rotation
+	// if oc.state == stateRotate {
+	// 	oc.rotateEnd.Set(float32(mev.Xpos), float32(mev.Ypos))
+	// 	oc.rotateDelta.SubVectors(&oc.rotateEnd, &oc.rotateStart)
+	// 	oc.rotateStart = oc.rotateEnd
+	// 	// rotating across whole screen goes 360 degrees around
+	// 	width, height := oc.win.Size()
+	// 	oc.RotateLeft(2 * math32.Pi * oc.rotateDelta.X / float32(width) * oc.RotateSpeed)
+	// 	// rotating up and down along whole screen attempts to go 360, but limited to 180
+	// 	oc.RotateUp(2 * math32.Pi * oc.rotateDelta.Y / float32(height) * oc.RotateSpeed)
+	// 	return
+	// }
 
-	// Panning
-	if oc.state == statePan {
-		oc.panEnd.Set(float32(mev.Xpos), float32(mev.Ypos))
-		oc.panDelta.SubVectors(&oc.panEnd, &oc.panStart)
-		oc.panStart = oc.panEnd
-		oc.Pan(oc.panDelta.X, oc.panDelta.Y)
-		return
-	}
+	// // Panning
+	// if oc.state == statePan {
+	// 	oc.panEnd.Set(float32(mev.Xpos), float32(mev.Ypos))
+	// 	oc.panDelta.SubVectors(&oc.panEnd, &oc.panStart)
+	// 	oc.panStart = oc.panEnd
+	// 	oc.Pan(oc.panDelta.X, oc.panDelta.Y)
+	// 	return
+	// }
 
-	// Zooming
-	if oc.state == stateZoom {
-		oc.zoomEnd = float32(mev.Ypos)
-		oc.zoomDelta = oc.zoomEnd - oc.zoomStart
-		oc.zoomStart = oc.zoomEnd
-		oc.Zoom(oc.zoomDelta)
-	}
+	// // Zooming
+	// if oc.state == stateZoom {
+	// 	oc.zoomEnd = float32(mev.Ypos)
+	// 	oc.zoomDelta = oc.zoomEnd - oc.zoomStart
+	// 	oc.zoomStart = oc.zoomEnd
+	// 	oc.Zoom(oc.zoomDelta)
+	// }
 }
 
 // Called when mouse button scroll event is received
 func (oc *OrbitControl) onScroll(evname string, ev interface{}) {
 
-	if !oc.Enabled || !oc.EnableZoom || oc.state != stateNone {
-		return
-	}
-	sev := ev.(*window.ScrollEvent)
-	oc.Zoom(float32(-sev.Yoffset))
+	// if !oc.Enabled || !oc.EnableZoom || oc.state != stateNone {
+	// 	return
+	// }
+	// sev := ev.(*window.ScrollEvent)
+	// oc.Zoom(float32(-sev.Yoffset))
 }
 
 // Called when key is pressed, released or repeats.
 func (oc *OrbitControl) onKey(evname string, ev interface{}) {
 
-	if !oc.Enabled || !oc.EnableKeys {
-		return
-	}
+	// if !oc.Enabled || !oc.EnableKeys {
+	// 	return
+	// }
 
-	kev := ev.(*window.KeyEvent)
-	if kev.Action == window.Release {
-		return
-	}
+	// kev := ev.(*window.KeyEvent)
+	// if kev.Action == window.Release {
+	// 	return
+	// }
 
-	if oc.EnablePan && kev.Mods == 0 {
-		switch kev.Keycode {
-		case window.KeyUp:
-			oc.Pan(0, oc.KeyPanSpeed)
-		case window.KeyDown:
-			oc.Pan(0, -oc.KeyPanSpeed)
-		case window.KeyLeft:
-			oc.Pan(oc.KeyPanSpeed, 0)
-		case window.KeyRight:
-			oc.Pan(-oc.KeyPanSpeed, 0)
-		}
-	}
+	// if oc.EnablePan && kev.Mods == 0 {
+	// 	switch kev.Keycode {
+	// 	case window.KeyUp:
+	// 		oc.Pan(0, oc.KeyPanSpeed)
+	// 	case window.KeyDown:
+	// 		oc.Pan(0, -oc.KeyPanSpeed)
+	// 	case window.KeyLeft:
+	// 		oc.Pan(oc.KeyPanSpeed, 0)
+	// 	case window.KeyRight:
+	// 		oc.Pan(-oc.KeyPanSpeed, 0)
+	// 	}
+	// }
 
-	if oc.EnableRotate && kev.Mods == window.ModShift {
-		switch kev.Keycode {
-		case window.KeyUp:
-			oc.RotateUp(oc.KeyRotateSpeed)
-		case window.KeyDown:
-			oc.RotateUp(-oc.KeyRotateSpeed)
-		case window.KeyLeft:
-			oc.RotateLeft(-oc.KeyRotateSpeed)
-		case window.KeyRight:
-			oc.RotateLeft(oc.KeyRotateSpeed)
-		}
-	}
+	// if oc.EnableRotate && kev.Mods == window.ModShift {
+	// 	switch kev.Keycode {
+	// 	case window.KeyUp:
+	// 		oc.RotateUp(oc.KeyRotateSpeed)
+	// 	case window.KeyDown:
+	// 		oc.RotateUp(-oc.KeyRotateSpeed)
+	// 	case window.KeyLeft:
+	// 		oc.RotateLeft(-oc.KeyRotateSpeed)
+	// 	case window.KeyRight:
+	// 		oc.RotateLeft(oc.KeyRotateSpeed)
+	// 	}
+	// }
 
-	if oc.EnableZoom && kev.Mods == window.ModControl {
-		switch kev.Keycode {
-		case window.KeyUp:
-			oc.Zoom(-1.0)
-		case window.KeyDown:
-			oc.Zoom(1.0)
-		}
-	}
+	// if oc.EnableZoom && kev.Mods == window.ModControl {
+	// 	switch kev.Keycode {
+	// 	case window.KeyUp:
+	// 		oc.Zoom(-1.0)
+	// 	case window.KeyDown:
+	// 		oc.Zoom(1.0)
+	// 	}
+	// }
 }
 
 func (oc *OrbitControl) pan(deltaX, deltaY float32, swidth, sheight int) {

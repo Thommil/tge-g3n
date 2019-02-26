@@ -15,7 +15,7 @@ import (
 // Mesh is a Graphic with uniforms for the model, view, projection, and normal matrices.
 type Mesh struct {
 	Graphic             // Embedded graphic
-	uniMm  gls.Uniform  // Model matrix uniform location cache
+	uniMm   gls.Uniform // Model matrix uniform location cache
 	uniMVm  gls.Uniform // Model view matrix uniform location cache
 	uniMVPm gls.Uniform // Model view projection matrix uniform cache
 	uniNm   gls.Uniform // Normal matrix uniform cache

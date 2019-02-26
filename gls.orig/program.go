@@ -63,8 +63,7 @@ func (prog *Program) AddShader(stype uint32, source string) {
 
 	// Check if program already built
 	if prog.handle != 0 {
-		fmt.Println("Program already built")
-		panic(fmt.Errorf("Program already built"))
+		//log.Fatal("Program already built")
 	}
 	prog.shaders = append(prog.shaders, shaderInfo{stype, source, 0})
 }
@@ -152,11 +151,11 @@ func (prog *Program) GetUniformLocation(name string) int32 {
 	// Get location from OpenGL
 	loc = prog.gs.GetUniformLocation(prog.handle, name)
 	prog.gs.stats.UnilocMiss++
-
+	fmt.Printf("%v %v %v\n", prog.Handle, name, loc)
 	// Cache result
 	prog.uniforms[name] = loc
 	if loc < 0 {
-		fmt.Printf("WARNING : Program.GetUniformLocation(%s): NOT FOUND\n", name)
+		fmt.Printf("Program.GetUniformLocation(%s): NOT FOUND\n", name)
 	}
 
 	return loc
@@ -189,7 +188,7 @@ func (prog *Program) CompileShader(stype uint32, source string) (uint32, error) 
 	// If the shader compiled OK but the log has data,
 	// log this data instead of returning error
 	if len(slog) > 2 {
-		fmt.Printf("WARNING %s", slog)
+		//log.Warn("%s", slog)
 	}
 
 	return shader, nil
