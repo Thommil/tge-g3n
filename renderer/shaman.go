@@ -14,9 +14,9 @@ import (
 	"github.com/thommil/tge-g3n/gls"
 	"github.com/thommil/tge-g3n/material"
 	"github.com/thommil/tge-g3n/renderer/shaders"
-)
 
-const GLSL_VERSION = "330 core"
+	gl "github.com/thommil/tge-gl"
+)
 
 // Regular expression to parse #include <name> [quantity] directive
 var rexInclude *regexp.Regexp
@@ -253,7 +253,7 @@ func (sm *Shaman) preprocess(source string, defines map[string]string) (string, 
 	// followed by "#define" directives
 	var prefix = ""
 	if defines != nil { // This is only true for the outer call
-		prefix = fmt.Sprintf("#version %s\n", GLSL_VERSION)
+		prefix = fmt.Sprintf("#version %s\n", gl.GetGLSLVersion())
 		for name, value := range defines {
 			prefix = prefix + fmt.Sprintf("#define %s %s\n", name, value)
 		}

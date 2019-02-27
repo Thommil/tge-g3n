@@ -1,3 +1,5 @@
+precision highp float;
+
 //
 // Physically Based Shading of a microfacet surface material - Fragment Shader
 // Modified from reference implementation at https://github.com/KhronosGroup/glTF-WebGL-PBR
@@ -14,8 +16,6 @@
 
 //#extension GL_EXT_shader_texture_lod: enable
 //#extension GL_OES_standard_derivatives : enable
-
-precision highp float;
 
 //uniform vec3 u_LightDirection;
 //uniform vec3 u_LightColor;

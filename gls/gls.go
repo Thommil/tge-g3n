@@ -73,7 +73,7 @@ const (
 	capUndef    = 0
 	capDisabled = 1
 	capEnabled  = 2
-	uintUndef   = math.MaxUint32
+	uintUndef   = math.MaxUint16
 	intFalse    = 0
 	intTrue     = 1
 )
@@ -185,7 +185,7 @@ func (gs *GLS) ActiveTexture(texture uint32) {
 
 // AttachShader attaches the specified shader object to the specified program object.
 func (gs *GLS) AttachShader(program, shader uint32) {
-	gl.AttachShader(gl.Program{Init: true, Value: program}, gl.Shader{shader})
+	gl.AttachShader(gl.Program{Value: program}, gl.Shader{shader})
 }
 
 // BindBuffer binds a buffer object to the specified buffer binding point.
@@ -312,7 +312,7 @@ func (gs *GLS) DeleteShader(shader uint32) {
 // DeleteProgram frees the memory and invalidates the name
 // associated with the specified program object.
 func (gs *GLS) DeleteProgram(program uint32) {
-	gl.DeleteProgram(gl.Program{Init: true, Value: program})
+	gl.DeleteProgram(gl.Program{Value: program})
 }
 
 // DeleteTextures deletes n​textures named
@@ -443,18 +443,18 @@ func (gs *GLS) GenVertexArray() uint32 {
 
 // GetAttribLocation returns the location of the specified attribute variable.
 func (gs *GLS) GetAttribLocation(program uint32, name string) int32 {
-	loc := gl.GetAttribLocation(gl.Program{Init: true, Value: program}, name)
+	loc := gl.GetAttribLocation(gl.Program{Value: program}, name)
 	return int32(loc.Value)
 }
 
 // GetProgramiv returns the specified parameter from the specified program object.
 func (gs *GLS) GetProgramiv(program, pname uint32, params *int32) {
-	*params = int32(gl.GetProgrami(gl.Program{Init: true, Value: program}, gl.Enum(pname)))
+	*params = int32(gl.GetProgrami(gl.Program{Value: program}, gl.Enum(pname)))
 }
 
 // GetProgramInfoLog returns the information log for the specified program object.
 func (gs *GLS) GetProgramInfoLog(program uint32) string {
-	return gl.GetProgramInfoLog(gl.Program{Init: true, Value: program})
+	return gl.GetProgramInfoLog(gl.Program{Value: program})
 }
 
 // GetShaderInfoLog returns the information log for the specified shader object.
@@ -469,7 +469,7 @@ func (gs *GLS) GetString(name uint32) string {
 
 // GetUniformLocation returns the location of a uniform variable for the specified program.
 func (gs *GLS) GetUniformLocation(program uint32, name string) int32 {
-	loc := gl.GetUniformLocation(gl.Program{Init: true, Value: program}, name)
+	loc := gl.GetUniformLocation(gl.Program{Value: program}, name)
 	return int32(loc.Value)
 }
 
@@ -489,7 +489,7 @@ func (gs *GLS) LineWidth(width float32) {
 
 // LinkProgram links the specified program object.
 func (gs *GLS) LinkProgram(program uint32) {
-	gl.LinkProgram(gl.Program{Init: true, Value: program})
+	gl.LinkProgram(gl.Program{Value: program})
 }
 
 // GetShaderiv returns the specified parameter from the specified shader object.
@@ -680,7 +680,7 @@ func (gs *GLS) UseProgram(prog *Program) {
 	if prog.handle == 0 {
 		panic("Invalid program")
 	}
-	gl.UseProgram(gl.Program{Init: true, Value: prog.handle})
+	gl.UseProgram(gl.Program{Value: prog.handle})
 	gs.prog = prog
 
 	// Inserts program in cache if not already there.

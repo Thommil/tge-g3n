@@ -1,3 +1,5 @@
+precision mediump float;
+
 //
 // Fragment Shader template
 //

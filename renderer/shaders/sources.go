@@ -2,11 +2,6 @@
 // To regenerate this file install 'g3nshaders' and execute:
 // 'go generate' in this folder.
 
-// +build darwin freebsd linux windows
-// +build !android
-// +build !ios
-// +build !js
-
 package shaders
 
 const include_attributes_source = `//
@@ -114,7 +109,7 @@ const include_material_source = `//
 //
 
 // Material parameters uniform array
-uniform vec3 Material[6];
+uniform mediump vec3 Material[6];
 // Macros to access elements inside the Material array
 #define MatAmbientColor		Material[0]
 #define MatDiffuseColor     Material[1]
@@ -301,7 +296,8 @@ void phongModel(vec4 position, vec3 normal, vec3 camDir, vec3 matAmbient, vec3 m
 }
 `
 
-const basic_fragment_source = `//
+const basic_fragment_source = `precision mediump float;
+//
 // Fragment Shader template
 //
 
@@ -335,7 +331,8 @@ void main() {
 
 `
 
-const panel_fragment_source = `//
+const panel_fragment_source = `precision mediump float;
+//
 // Fragment Shader template
 //
 
@@ -488,7 +485,8 @@ void main() {
 
 `
 
-const phong_fragment_source = `//
+const phong_fragment_source = `precision mediump float;
+//
 // Fragment Shader template
 //
 
@@ -591,7 +589,8 @@ void main() {
 
 `
 
-const physical_fragment_source = `//
+const physical_fragment_source = `precision highp float;
+//
 // Physically Based Shading of a microfacet surface material - Fragment Shader
 // Modified from reference implementation at https://github.com/KhronosGroup/glTF-WebGL-PBR
 //
@@ -607,8 +606,6 @@ const physical_fragment_source = `//
 
 //#extension GL_EXT_shader_texture_lod: enable
 //#extension GL_OES_standard_derivatives : enable
-
-precision highp float;
 
 //uniform vec3 u_LightDirection;
 //uniform vec3 u_LightColor;
@@ -1061,7 +1058,8 @@ void main() {
 
 `
 
-const point_fragment_source = `#include <material>
+const point_fragment_source = `precision mediump float;
+#include <material>
 
 // GLSL 3.30 does not allow indexing texture sampler with non constant values.
 // This macro is used to mix the texture with the specified index with the material color.
@@ -1137,7 +1135,8 @@ void main() {
 
 `
 
-const sprite_fragment_source = `//
+const sprite_fragment_source = `precision mediump float;
+//
 // Fragment shader for sprite
 //
 
@@ -1206,7 +1205,8 @@ void main() {
 
 `
 
-const standard_fragment_source = `//
+const standard_fragment_source = `precision mediump float;
+//
 // Fragment Shader template
 //
 #include <material>
