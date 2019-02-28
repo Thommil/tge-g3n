@@ -111,7 +111,7 @@ const include_material_source = `//
 //
 
 // Material parameters uniform array
-uniform mediump vec3 Material[6];
+uniform lowp vec3 Material[6];
 // Macros to access elements inside the Material array
 #define MatAmbientColor		Material[0]
 #define MatDiffuseColor     Material[1]
@@ -298,7 +298,7 @@ void phongModel(vec4 position, vec3 normal, vec3 camDir, vec3 matAmbient, vec3 m
 }
 `
 
-const basic_fragment_source = `precision mediump float;
+const basic_fragment_source = `precision lowp float;
 //
 // Fragment Shader template
 //
@@ -333,7 +333,7 @@ void main() {
 
 `
 
-const panel_fragment_source = `precision mediump float;
+const panel_fragment_source = `precision lowp float;
 //
 // Fragment Shader template
 //
@@ -487,7 +487,7 @@ void main() {
 
 `
 
-const phong_fragment_source = `precision mediump float;
+const phong_fragment_source = `precision lowp float;
 //
 // Fragment Shader template
 //
@@ -1060,7 +1060,7 @@ void main() {
 
 `
 
-const point_fragment_source = `precision mediump float;
+const point_fragment_source = `precision lowp float;
 #include <material>
 
 // GLSL 3.30 does not allow indexing texture sampler with non constant values.
@@ -1137,7 +1137,7 @@ void main() {
 
 `
 
-const sprite_fragment_source = `precision mediump float;
+const sprite_fragment_source = `precision lowp float;
 //
 // Fragment shader for sprite
 //
@@ -1207,7 +1207,7 @@ void main() {
 
 `
 
-const standard_fragment_source = `precision mediump float;
+const standard_fragment_source = `precision lowp float;
 //
 // Fragment Shader template
 //

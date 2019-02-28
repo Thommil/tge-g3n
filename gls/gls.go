@@ -569,22 +569,23 @@ func (gs *GLS) Uniform4f(location int32, v0, v1, v2, v3 float32) {
 	gs.stats.Unisets++
 }
 
-// Used to store buffers to avoid reallocation
-var uniformArrayBufferMap = make(map[int32][]float32)
+// float32 array singleton, allocate 1KB at startup
+var float32ArrayBuffer = make([]float32, 1024)
+var extendFactor = 2
 
-func getUniformArrayFromCache(size int32) []float32 {
-	if b, found := uniformArrayBufferMap[size]; found {
-		return b
-	} else {
-		b = make([]float32, size)
-		uniformArrayBufferMap[size] = b
-		return b
+func getFloat32ArrayBuffer(size int) []float32 {
+	if size > len(float32ArrayBuffer) {
+		for (1024 * extendFactor) < size {
+			extendFactor++
+		}
+		float32ArrayBuffer = make([]float32, (1024 * extendFactor))
 	}
+	return float32ArrayBuffer[:size]
 }
 
 // UniformMatrix3fv sets the value of one or many 3x3 float matrices for the current program object.
 func (gs *GLS) UniformMatrix3fv(location int32, count int32, transpose bool, pm *float32) {
-	b := getUniformArrayFromCache(count * 9)
+	b := getFloat32ArrayBuffer(int(count * 9))
 	for i := range b {
 		b[i] = *(*float32)(unsafe.Pointer(uintptr(unsafe.Pointer(pm)) + uintptr(i*4)))
 	}
@@ -594,7 +595,7 @@ func (gs *GLS) UniformMatrix3fv(location int32, count int32, transpose bool, pm 
 
 // UniformMatrix4fv sets the value of one or many 4x4 float matrices for the current program object.
 func (gs *GLS) UniformMatrix4fv(location int32, count int32, transpose bool, pm *float32) {
-	b := getUniformArrayFromCache(count * 16)
+	b := getFloat32ArrayBuffer(int(count * 16))
 	for i := range b {
 		b[i] = *(*float32)(unsafe.Pointer(uintptr(unsafe.Pointer(pm)) + uintptr(i*4)))
 	}
@@ -610,7 +611,7 @@ func (gs *GLS) Uniform1fv(location int32, count int32, v []float32) {
 
 // Uniform2fv sets the value of one or many vec2 uniform variables for the current program object.
 func (gs *GLS) Uniform2fv(location int32, count int32, v *float32) {
-	b := getUniformArrayFromCache(count * 2)
+	b := getFloat32ArrayBuffer(int(count * 2))
 	for i := range b {
 		b[i] = *(*float32)(unsafe.Pointer(uintptr(unsafe.Pointer(v)) + uintptr(i*4)))
 	}
@@ -619,7 +620,7 @@ func (gs *GLS) Uniform2fv(location int32, count int32, v *float32) {
 }
 
 func (gs *GLS) Uniform2fvUP(location int32, count int32, v unsafe.Pointer) {
-	b := getUniformArrayFromCache(count)
+	b := getFloat32ArrayBuffer(int(count))
 	for i := range b {
 		b[i] = *(*float32)(unsafe.Pointer(uintptr(v) + uintptr(i*4)))
 	}
@@ -629,7 +630,7 @@ func (gs *GLS) Uniform2fvUP(location int32, count int32, v unsafe.Pointer) {
 
 // Uniform3fv sets the value of one or many vec3 uniform variables for the current program object.
 func (gs *GLS) Uniform3fv(location int32, count int32, v *float32) {
-	b := getUniformArrayFromCache(count * 3)
+	b := getFloat32ArrayBuffer(int(count * 3))
 	for i := range b {
 		b[i] = *(*float32)(unsafe.Pointer(uintptr(unsafe.Pointer(v)) + uintptr(i*4)))
 	}
@@ -638,7 +639,7 @@ func (gs *GLS) Uniform3fv(location int32, count int32, v *float32) {
 }
 
 func (gs *GLS) Uniform3fvUP(location int32, count int32, v unsafe.Pointer) {
-	b := getUniformArrayFromCache(count * 3)
+	b := getFloat32ArrayBuffer(int(count * 3))
 	for i := range b {
 		b[i] = *(*float32)(unsafe.Pointer(uintptr(v) + uintptr(i*4)))
 	}
@@ -653,7 +654,7 @@ func (gs *GLS) Uniform4fv(location int32, count int32, v []float32) {
 }
 
 func (gs *GLS) Uniform4fvUP(location int32, count int32, v unsafe.Pointer) {
-	b := getUniformArrayFromCache(count * 4)
+	b := getFloat32ArrayBuffer(int(count * 4))
 	for i := range b {
 		b[i] = *(*float32)(unsafe.Pointer(uintptr(v) + uintptr(i*4)))
 	}
