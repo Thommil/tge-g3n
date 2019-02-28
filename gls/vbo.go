@@ -305,7 +305,7 @@ func (vbo *VBO) Transfer(gs *GLS) {
 			// Get attribute location in the current program
 			loc := gs.prog.GetAttribLocation(attrib.Name)
 			if loc < 0 {
-				fmt.Printf("WARNING : Attribute not found: %v", attrib.Name)
+				fmt.Printf("WARNING : Attribute not found: %v\n", attrib.Name)
 				continue
 			}
 			// Enables attribute and sets its stride and offset in the buffer
