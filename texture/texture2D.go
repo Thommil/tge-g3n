@@ -5,15 +5,16 @@
 package texture
 
 import (
+	"bytes"
 	"fmt"
 	"image"
 	"image/draw"
 	_ "image/gif"
 	_ "image/jpeg"
 	_ "image/png"
-	"os"
 	"unsafe"
 
+	plugin "github.com/thommil/tge-g3n"
 	"github.com/thommil/tge-g3n/gls"
 )
 
@@ -283,14 +284,21 @@ func (t *Texture2D) Height() int {
 func DecodeImage(imgfile string) (*image.RGBA, error) {
 
 	// Open image file
-	file, err := os.Open(imgfile)
+	// file, err := os.Open(imgfile)
+	// if err != nil {
+	// 	return nil, err
+	// }
+	// defer file.Close()
+
+	data, err := plugin.LoadAsset(imgfile)
 	if err != nil {
 		return nil, err
 	}
-	defer file.Close()
+
+	reader := bytes.NewReader(data)
 
 	// Decodes image
-	img, _, err := image.Decode(file)
+	img, _, err := image.Decode(reader)
 	if err != nil {
 		return nil, err
 	}

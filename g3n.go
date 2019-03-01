@@ -13,12 +13,14 @@ import (
 const Name = "g3n"
 
 type plugin struct {
+	runtime tge.Runtime
 }
 
 var _pluginInstance = &plugin{}
 
 func (p *plugin) Init(runtime tge.Runtime) error {
 	runtime.Use(gl.GetPlugin())
+	p.runtime = runtime
 	return nil
 }
 
@@ -27,10 +29,15 @@ func (p *plugin) GetName() string {
 }
 
 func (p *plugin) Dispose() {
-
+	p.runtime = nil
 }
 
 // GetPlugin returns plugin handler
 func GetPlugin() tge.Plugin {
 	return _pluginInstance
+}
+
+// LoadAsset gets assets from runtime instance
+func LoadAsset(path string) ([]byte, error) {
+	return _pluginInstance.runtime.LoadAsset(path)
 }
