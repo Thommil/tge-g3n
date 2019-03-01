@@ -301,7 +301,7 @@ void phongModel(vec4 position, vec3 normal, vec3 camDir, vec3 matAmbient, vec3 m
 }
 `
 
-const basic_fragment_source = `precision mediump float;
+const basic_fragment_source = `
 //
 // Fragment Shader template
 //
@@ -336,7 +336,7 @@ void main() {
 
 `
 
-const panel_fragment_source = `precision mediump float;
+const panel_fragment_source = `
 //
 // Fragment Shader template
 //
@@ -490,7 +490,7 @@ void main() {
 
 `
 
-const phong_fragment_source = `precision mediump float;
+const phong_fragment_source = `
 //
 // Fragment Shader template
 //
@@ -1063,7 +1063,7 @@ void main() {
 
 `
 
-const point_fragment_source = `precision mediump float;
+const point_fragment_source = `
 #include <material>
 
 // GLSL 3.30 does not allow indexing texture sampler with non constant values.
@@ -1140,7 +1140,7 @@ void main() {
 
 `
 
-const sprite_fragment_source = `precision mediump float;
+const sprite_fragment_source = `
 //
 // Fragment shader for sprite
 //
@@ -1210,7 +1210,7 @@ void main() {
 
 `
 
-const standard_fragment_source = `precision mediump float;
+const standard_fragment_source = `
 //
 // Fragment Shader template
 //

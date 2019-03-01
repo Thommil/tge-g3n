@@ -9,7 +9,6 @@ import (
 	"unsafe"
 
 	"github.com/thommil/tge-g3n/math32"
-
 	gl "github.com/thommil/tge-gl"
 )
 
@@ -78,10 +77,6 @@ const (
 	intTrue     = 1
 )
 
-const (
-	FloatSize = int32(unsafe.Sizeof(float32(0)))
-)
-
 // New creates and returns a new instance of a GLS object,
 // which encapsulates the state of an OpenGL context.
 // This should be called only after an active OpenGL context
@@ -92,13 +87,6 @@ func New() (*GLS, error) {
 	gs.reset()
 	gs.setDefaultState()
 	gs.checkErrors = true
-
-	// Preallocate conversion buffers
-	// size := 1 * 1024
-	// gs.gobuf = make([]byte, size)
-	// p := C.malloc(C.size_t(size))
-	// gs.cbuf = (*[1 << 30]byte)(unsafe.Pointer(p))[:size:size]
-
 	return gs, nil
 }
 
@@ -569,37 +557,15 @@ func (gs *GLS) Uniform4f(location int32, v0, v1, v2, v3 float32) {
 	gs.stats.Unisets++
 }
 
-// float32 array singleton, allocate 1KB at startup
-var float32ArrayBuffer = make([]float32, 1024)
-var extendFactor = 2
-
-func getFloat32ArrayBuffer(size int) []float32 {
-	if size > len(float32ArrayBuffer) {
-		for (1024 * extendFactor) < size {
-			extendFactor++
-		}
-		float32ArrayBuffer = make([]float32, (1024 * extendFactor))
-	}
-	return float32ArrayBuffer[:size]
-}
-
 // UniformMatrix3fv sets the value of one or many 3x3 float matrices for the current program object.
 func (gs *GLS) UniformMatrix3fv(location int32, count int32, transpose bool, pm *float32) {
-	b := getFloat32ArrayBuffer(int(count * 9))
-	for i := range b {
-		b[i] = *(*float32)(unsafe.Pointer(uintptr(unsafe.Pointer(pm)) + uintptr(i*4)))
-	}
-	gl.UniformMatrix3fv(gl.Uniform{location}, b)
+	gl.UniformMatrix3fvP(gl.Uniform{location}, count, transpose, pm)
 	gs.stats.Unisets++
 }
 
 // UniformMatrix4fv sets the value of one or many 4x4 float matrices for the current program object.
 func (gs *GLS) UniformMatrix4fv(location int32, count int32, transpose bool, pm *float32) {
-	b := getFloat32ArrayBuffer(int(count * 16))
-	for i := range b {
-		b[i] = *(*float32)(unsafe.Pointer(uintptr(unsafe.Pointer(pm)) + uintptr(i*4)))
-	}
-	gl.UniformMatrix4fv(gl.Uniform{location}, b)
+	gl.UniformMatrix4fvP(gl.Uniform{location}, count, transpose, pm)
 	gs.stats.Unisets++
 }
 
@@ -611,39 +577,23 @@ func (gs *GLS) Uniform1fv(location int32, count int32, v []float32) {
 
 // Uniform2fv sets the value of one or many vec2 uniform variables for the current program object.
 func (gs *GLS) Uniform2fv(location int32, count int32, v *float32) {
-	b := getFloat32ArrayBuffer(int(count * 2))
-	for i := range b {
-		b[i] = *(*float32)(unsafe.Pointer(uintptr(unsafe.Pointer(v)) + uintptr(i*4)))
-	}
-	gl.Uniform2fv(gl.Uniform{location}, b)
+	gl.Uniform2fvP(gl.Uniform{location}, count, v)
 	gs.stats.Unisets++
 }
 
 func (gs *GLS) Uniform2fvUP(location int32, count int32, v unsafe.Pointer) {
-	b := getFloat32ArrayBuffer(int(count))
-	for i := range b {
-		b[i] = *(*float32)(unsafe.Pointer(uintptr(v) + uintptr(i*4)))
-	}
-	gl.Uniform2fv(gl.Uniform{location}, b)
+	gl.Uniform2fvUP(gl.Uniform{location}, count, v)
 	gs.stats.Unisets++
 }
 
 // Uniform3fv sets the value of one or many vec3 uniform variables for the current program object.
 func (gs *GLS) Uniform3fv(location int32, count int32, v *float32) {
-	b := getFloat32ArrayBuffer(int(count * 3))
-	for i := range b {
-		b[i] = *(*float32)(unsafe.Pointer(uintptr(unsafe.Pointer(v)) + uintptr(i*4)))
-	}
-	gl.Uniform3fv(gl.Uniform{location}, b)
+	gl.Uniform3fvP(gl.Uniform{location}, count, v)
 	gs.stats.Unisets++
 }
 
 func (gs *GLS) Uniform3fvUP(location int32, count int32, v unsafe.Pointer) {
-	b := getFloat32ArrayBuffer(int(count * 3))
-	for i := range b {
-		b[i] = *(*float32)(unsafe.Pointer(uintptr(v) + uintptr(i*4)))
-	}
-	gl.Uniform3fv(gl.Uniform{location}, b)
+	gl.Uniform3fvUP(gl.Uniform{location}, count, v)
 	gs.stats.Unisets++
 }
 
@@ -654,11 +604,7 @@ func (gs *GLS) Uniform4fv(location int32, count int32, v []float32) {
 }
 
 func (gs *GLS) Uniform4fvUP(location int32, count int32, v unsafe.Pointer) {
-	b := getFloat32ArrayBuffer(int(count * 4))
-	for i := range b {
-		b[i] = *(*float32)(unsafe.Pointer(uintptr(v) + uintptr(i*4)))
-	}
-	gl.Uniform4fv(gl.Uniform{location}, b)
+	gl.Uniform4fvUP(gl.Uniform{location}, count, v)
 	gs.stats.Unisets++
 }
 
@@ -689,94 +635,3 @@ func (gs *GLS) UseProgram(prog *Program) {
 		gs.programs[prog] = true
 	}
 }
-
-// // Ptr takes a slice or pointer (to a singular scalar value or the first
-// // element of an array or slice) and returns its GL-compatible address.
-// //
-// // For example:
-// //
-// // 	var data []uint8
-// // 	...
-// // 	gl.TexImage2D(gl.TEXTURE_2D, ..., gl.UNSIGNED_BYTE, gl.Ptr(&data[0]))
-// func ptr(data interface{}) unsafe.Pointer {
-// 	if data == nil {
-// 		return unsafe.Pointer(nil)
-// 	}
-// 	var addr unsafe.Pointer
-// 	v := reflect.ValueOf(data)
-// 	switch v.Type().Kind() {
-// 	case reflect.Ptr:
-// 		e := v.Elem()
-// 		switch e.Kind() {
-// 		case
-// 			reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64,
-// 			reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64,
-// 			reflect.Float32, reflect.Float64:
-// 			addr = unsafe.Pointer(e.UnsafeAddr())
-// 		default:
-// 			panic(fmt.Errorf("unsupported pointer to type %s; must be a slice or pointer to a singular scalar value or the first element of an array or slice", e.Kind()))
-// 		}
-// 	case reflect.Uintptr:
-// 		addr = unsafe.Pointer(v.Pointer())
-// 	case reflect.Slice:
-// 		addr = unsafe.Pointer(v.Index(0).UnsafeAddr())
-// 	default:
-// 		panic(fmt.Errorf("unsupported type %s; must be a slice or pointer to a singular scalar value or the first element of an array or slice", v.Type()))
-// 	}
-// 	return addr
-// }
-
-// // bool2c convert a Go bool to C.GLboolean
-// func bool2c(b bool) C.GLboolean {
-
-// 	if b {
-// 		return C.GLboolean(1)
-// 	}
-// 	return C.GLboolean(0)
-// }
-
-// // gobufSize returns a pointer to static buffer with the specified size not including the terminator.
-// // If there is available space, there is no memory allocation.
-// func (gs *GLS) gobufSize(size uint32) *C.GLchar {
-
-// 	if size+1 > uint32(len(gs.gobuf)) {
-// 		gs.gobuf = make([]byte, size+1)
-// 	}
-// 	return (*C.GLchar)(unsafe.Pointer(&gs.gobuf[0]))
-// }
-
-// // gobufStr converts a Go String to a C string by copying it to a static buffer
-// // and returning a pointer to the start of the buffer.
-// // If there is available space, there is no memory allocation.
-// func (gs *GLS) gobufStr(s string) *C.GLchar {
-
-// 	p := gs.gobufSize(uint32(len(s) + 1))
-// 	copy(gs.gobuf, s)
-// 	gs.gobuf[len(s)] = 0
-// 	return p
-// }
-
-// // cbufSize returns a pointer to static buffer with C memory
-// // If there is available space, there is no memory allocation.
-// func (gs *GLS) cbufSize(size uint32) *C.GLchar {
-
-// 	if size > uint32(len(gs.cbuf)) {
-// 		if len(gs.cbuf) > 0 {
-// 			C.free(unsafe.Pointer(&gs.cbuf[0]))
-// 		}
-// 		p := C.malloc(C.size_t(size))
-// 		gs.cbuf = (*[1 << 30]byte)(unsafe.Pointer(p))[:size:size]
-// 	}
-// 	return (*C.GLchar)(unsafe.Pointer(&gs.cbuf[0]))
-// }
-
-// // cbufStr converts a Go String to a C string by copying it to a single pre-allocated buffer
-// // using C memory and returning a pointer to the start of the buffer.
-// // If there is available space, there is no memory allocation.
-// func (gs *GLS) cbufStr(s string) *C.GLchar {
-
-// 	p := gs.cbufSize(uint32(len(s) + 1))
-// 	copy(gs.cbuf, s)
-// 	gs.cbuf[len(s)] = 0
-// 	return p
-// }
