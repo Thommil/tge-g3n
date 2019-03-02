@@ -18,8 +18,13 @@ type plugin struct {
 
 var _pluginInstance = &plugin{}
 
+// GetInstance returns plugin handler
+func GetInstance() tge.Plugin {
+	return _pluginInstance
+}
+
 func (p *plugin) Init(runtime tge.Runtime) error {
-	runtime.Use(gl.GetPlugin())
+	runtime.Use(gl.GetInstance())
 	p.runtime = runtime
 	return nil
 }
@@ -32,12 +37,7 @@ func (p *plugin) Dispose() {
 	p.runtime = nil
 }
 
-// GetPlugin returns plugin handler
-func GetPlugin() tge.Plugin {
-	return _pluginInstance
-}
-
 // LoadAsset gets assets from runtime instance
 func LoadAsset(path string) ([]byte, error) {
-	return _pluginInstance.runtime.LoadAsset(path)
+	return _pluginInstance.runtime.GetAsset(path)
 }
