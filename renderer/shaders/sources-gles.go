@@ -111,7 +111,7 @@ const include_material_source = `//
 //
 
 // Material parameters uniform array
-uniform highp vec3 Material[6];
+uniform mediump vec3 Material[6];
 // Macros to access elements inside the Material array
 #define MatAmbientColor		Material[0]
 #define MatDiffuseColor     Material[1]
@@ -126,7 +126,7 @@ uniform highp vec3 Material[6];
     // Texture unit sampler array
     uniform sampler2D MatTexture[MAT_TEXTURES];
     // Texture parameters (3*vec2 per texture)
-    uniform vec2 MatTexinfo[3*MAT_TEXTURES];
+    uniform mediump vec2 MatTexinfo[3*MAT_TEXTURES];
     // Macros to access elements inside the MatTexinfo array
     #define MatTexOffset(a)		MatTexinfo[(3*a)]
     #define MatTexRepeat(a)		MatTexinfo[(3*a)+1]
@@ -298,7 +298,7 @@ void phongModel(vec4 position, vec3 normal, vec3 camDir, vec3 matAmbient, vec3 m
 }
 `
 
-const basic_fragment_source = `precision highp float;
+const basic_fragment_source = `precision mediump float;
 //
 // Fragment Shader template
 //
@@ -333,7 +333,7 @@ void main() {
 
 `
 
-const panel_fragment_source = `precision highp float;
+const panel_fragment_source = `precision mediump float;
 //
 // Fragment Shader template
 //
@@ -487,7 +487,7 @@ void main() {
 
 `
 
-const phong_fragment_source = `precision highp float;
+const phong_fragment_source = `precision mediump float;
 //
 // Fragment Shader template
 //
@@ -591,7 +591,7 @@ void main() {
 
 `
 
-const physical_fragment_source = `precision highp float;
+const physical_fragment_source = `precision mediump float;
 //
 // Physically Based Shading of a microfacet surface material - Fragment Shader
 // Modified from reference implementation at https://github.com/KhronosGroup/glTF-WebGL-PBR
@@ -1060,7 +1060,7 @@ void main() {
 
 `
 
-const point_fragment_source = `precision highp float;
+const point_fragment_source = `precision mediump float;
 #include <material>
 
 // GLSL 3.30 does not allow indexing texture sampler with non constant values.
@@ -1137,7 +1137,7 @@ void main() {
 
 `
 
-const sprite_fragment_source = `precision highp float;
+const sprite_fragment_source = `precision mediump float;
 //
 // Fragment shader for sprite
 //
@@ -1207,7 +1207,7 @@ void main() {
 
 `
 
-const standard_fragment_source = `precision highp float;
+const standard_fragment_source = `precision mediump float;
 //
 // Fragment Shader template
 //
