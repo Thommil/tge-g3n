@@ -6,7 +6,6 @@ package g3n
 
 import (
 	tge "github.com/thommil/tge"
-	gl "github.com/thommil/tge-gl"
 )
 
 // Name name of the plugin
@@ -18,13 +17,11 @@ type plugin struct {
 
 var _pluginInstance = &plugin{}
 
-// Load returns plugin handler
-func Load() tge.Plugin {
-	return _pluginInstance
+func init() {
+	tge.Register(_pluginInstance)
 }
 
 func (p *plugin) Init(runtime tge.Runtime) error {
-	runtime.Use(gl.Load())
 	p.runtime = runtime
 	return nil
 }
