@@ -18,13 +18,13 @@ type plugin struct {
 
 var _pluginInstance = &plugin{}
 
-// GetInstance returns plugin handler
-func GetInstance() tge.Plugin {
+// Load returns plugin handler
+func Load() tge.Plugin {
 	return _pluginInstance
 }
 
 func (p *plugin) Init(runtime tge.Runtime) error {
-	runtime.Use(gl.GetInstance())
+	runtime.Use(gl.Load())
 	p.runtime = runtime
 	return nil
 }
