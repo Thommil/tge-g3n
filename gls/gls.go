@@ -385,7 +385,7 @@ func (gs *GLS) Disable(cap int) {
 
 // EnableVertexAttribArray enables a generic vertex attribute array.
 func (gs *GLS) EnableVertexAttribArray(index uint32) {
-	gl.EnableVertexAttribArray(gl.Attrib{uint(index)})
+	gl.EnableVertexAttribArray(gl.Attrib{int32(index)})
 }
 
 // CullFace specifies whether front- or back-facing facets can be culled.
@@ -610,7 +610,7 @@ func (gs *GLS) Uniform4fvUP(location int32, count int32, v unsafe.Pointer) {
 
 // VertexAttribPointer defines an array of generic vertex attribute data.
 func (gs *GLS) VertexAttribPointer(index uint32, size int32, xtype uint32, normalized bool, stride int32, offset uint32) {
-	gl.VertexAttribPointer(gl.Attrib{uint(index)}, int(size), gl.Enum(xtype), normalized, int(stride), int(offset))
+	gl.VertexAttribPointer(gl.Attrib{int32(index)}, int(size), gl.Enum(xtype), normalized, int(stride), int(offset))
 }
 
 // Viewport sets the viewport.
