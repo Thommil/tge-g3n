@@ -5,9 +5,10 @@
     <a href="https://goreportcard.com/report/github.com/thommil/tge-g3n"><img src="https://goreportcard.com/badge/github.com/thommil/tge-g3n"  alt="Go Report Card"/></a>
 </p>
 
-Plugins for [G3N](https://github.com/g3n/engine) GO engine for TGE. 
+Game Engine for TGE runtime - [TGE](https://github.com/thommil/tge)
 
-Copyright (c) 2016 The G3N Authors. All rights reserved.
+Based on :
+ * [G3N](https://github.com/g3n/engine) - Copyright (c) 2016 The G3N Authors. All rights reserved.
 
 ## Targets
  * Desktop
