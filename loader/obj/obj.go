@@ -7,11 +7,11 @@ package obj
 
 import (
 	"bufio"
+	"bytes"
 	"errors"
 	"fmt"
 	"io"
 	"math"
-	"os"
 	"path/filepath"
 	"strconv"
 	"strings"
@@ -23,6 +23,8 @@ import (
 	"github.com/thommil/tge-g3n/material"
 	"github.com/thommil/tge-g3n/math32"
 	"github.com/thommil/tge-g3n/texture"
+
+	plugin "github.com/thommil/tge-g3n"
 )
 
 // Decoder contains all decoded data from the obj and mtl files
@@ -84,11 +86,15 @@ const (
 func Decode(objpath string, mtlpath string) (*Decoder, error) {
 
 	// Opens obj file
-	fobj, err := os.Open(objpath)
+	// fobj, err := os.Open(objpath)
+	// if err != nil {
+	// 	return nil, err
+	// }
+	// defer fobj.Close()
+	fobj, err := plugin.Runtime().GetAsset(objpath)
 	if err != nil {
 		return nil, err
 	}
-	defer fobj.Close()
 
 	// If path of material file not supplied,
 	// try to use the base name of the obj file
@@ -99,13 +105,18 @@ func Decode(objpath string, mtlpath string) (*Decoder, error) {
 	}
 
 	// Opens mtl file
-	fmtl, err := os.Open(mtlpath)
+	// fmtl, err := os.Open(mtlpath)
+	// if err != nil {
+	// 	return nil, err
+	// }
+	// defer fmtl.Close()
+
+	fmtl, err := plugin.Runtime().GetAsset(mtlpath)
 	if err != nil {
 		return nil, err
 	}
-	defer fmtl.Close()
 
-	dec, err := DecodeReader(fobj, fmtl)
+	dec, err := DecodeReader(bytes.NewReader(fobj), bytes.NewReader(fmtl))
 	if err != nil {
 		return nil, err
 	}

@@ -69,6 +69,10 @@ const (
 )
 
 const (
+	FloatSize = int32(unsafe.Sizeof(float32(0)))
+)
+
+const (
 	capUndef    = 0
 	capDisabled = 1
 	capEnabled  = 2

@@ -8,13 +8,14 @@ import (
 	"image"
 	"image/color"
 	"image/draw"
-	"io/ioutil"
 	"strings"
 
 	"github.com/golang/freetype/truetype"
 	"github.com/thommil/tge-g3n/math32"
 	"golang.org/x/image/font"
 	"golang.org/x/image/math/fixed"
+
+	plugin "github.com/thommil/tge-g3n"
 )
 
 // Font represents a TrueType font face.
@@ -47,11 +48,18 @@ const (
 func NewFont(ttfFile string) (*Font, error) {
 
 	// Reads font bytes
-	fontBytes, err := ioutil.ReadFile(ttfFile)
+	// fontBytes, err := ioutil.ReadFile(ttfFile)
+	// if err != nil {
+	// 	return nil, err
+	// }
+	// return NewFontFromData(fontBytes)
+
+	data, err := plugin.Runtime().GetAsset(ttfFile)
 	if err != nil {
 		return nil, err
 	}
-	return NewFontFromData(fontBytes)
+
+	return NewFontFromData(data)
 }
 
 // NewFontFromData creates and returns a new font object from the specified TTF data.

@@ -34,7 +34,7 @@ func (p *plugin) Dispose() {
 	p.runtime = nil
 }
 
-// LoadAsset gets assets from runtime instance
-func LoadAsset(path string) ([]byte, error) {
-	return _pluginInstance.runtime.GetAsset(path)
+// Runtime gives access to current running TGE Runtime
+func Runtime() tge.Runtime {
+	return _pluginInstance.runtime
 }

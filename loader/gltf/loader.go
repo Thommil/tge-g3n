@@ -15,6 +15,7 @@ import (
 	"io"
 	"io/ioutil"
 	"os"
+	"path"
 	"path/filepath"
 	"strings"
 	"unsafe"
@@ -28,21 +29,30 @@ import (
 	"github.com/thommil/tge-g3n/material"
 	"github.com/thommil/tge-g3n/math32"
 	"github.com/thommil/tge-g3n/texture"
+
+	plugin "github.com/thommil/tge-g3n"
 )
 
 // ParseJSON parses the glTF data from the specified JSON file
 // and returns a pointer to the parsed structure.
 func ParseJSON(filename string) (*GLTF, error) {
 
-	// Open file
-	f, err := os.Open(filename)
+	// // Open file
+	// f, err := os.Open(filename)
+	// if err != nil {
+	// 	return nil, err
+	// }
+	// // Extract path from file
+	// path := filepath.Dir(filename)
+	// defer f.Close()
+	// return ParseJSONReader(f, path)
+
+	data, err := plugin.Runtime().GetAsset(filename)
 	if err != nil {
 		return nil, err
 	}
-	// Extract path from file
-	path := filepath.Dir(filename)
-	defer f.Close()
-	return ParseJSONReader(f, path)
+
+	return ParseJSONReader(bytes.NewReader(data), path.Dir(filename))
 }
 
 // ParseJSONReader parses the glTF JSON data from the specified reader
@@ -185,7 +195,7 @@ func (g *GLTF) LoadNode(nodeIdx int) (core.INode, error) {
 	nodeData := g.Nodes[nodeIdx]
 	// Return cached if available
 	if nodeData.cache != nil {
-		log.Debug("Fetching Node %d (cached)", nodeIdx)
+		// log.Debug("Fetching Node %d (cached)", nodeIdx)
 		return nodeData.cache, nil
 	}
 	// log.Debug("Loading Node %d", nodeIdx)
@@ -608,7 +618,7 @@ func (g *GLTF) addAttributeToVBO(vbo *gls.VBO, attribName string, byteOffset uin
 
 	aType, ok := AttributeName[attribName]
 	if !ok {
-		fmt.Fprintf("WARNING: Attribute %v is not supported!\n", attribName)
+		fmt.Printf("WARNING: Attribute %v is not supported!\n", attribName)
 		return
 	}
 	vbo.AddAttribOffset(aType, byteOffset)

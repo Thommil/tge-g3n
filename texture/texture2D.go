@@ -290,7 +290,7 @@ func DecodeImage(imgfile string) (*image.RGBA, error) {
 	// }
 	// defer file.Close()
 
-	data, err := plugin.LoadAsset(imgfile)
+	data, err := plugin.Runtime().GetAsset(imgfile)
 	if err != nil {
 		return nil, err
 	}

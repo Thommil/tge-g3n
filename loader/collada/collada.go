@@ -6,13 +6,15 @@
 package collada
 
 import (
+	"bytes"
 	"encoding/xml"
 	"fmt"
+	"io"
+
+	plugin "github.com/thommil/tge-g3n"
 	"github.com/thommil/tge-g3n/geometry"
 	"github.com/thommil/tge-g3n/material"
 	"github.com/thommil/tge-g3n/texture"
-	"io"
-	"os"
 )
 
 // Decoder contains all decoded data from collada file
@@ -34,14 +36,21 @@ type geomInstance struct {
 // Decode decodes the specified collada file returning a decoder object and an error.
 func Decode(filepath string) (*Decoder, error) {
 
-	// Opens file
-	f, err := os.Open(filepath)
+	// // Opens file
+	// f, err := os.Open(filepath)
+	// if err != nil {
+	// 	return nil, err
+	// }
+	// defer f.Close()
+
+	// return DecodeReader(f)
+
+	data, err := plugin.Runtime().GetAsset(filepath)
 	if err != nil {
 		return nil, err
 	}
-	defer f.Close()
 
-	return DecodeReader(f)
+	return DecodeReader(bytes.NewReader(data))
 }
 
 // DecodeReader decodes the specified collada reader returning a decoder object and an error.
