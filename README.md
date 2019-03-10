@@ -21,9 +21,9 @@ Based on :
 
 ## Limitations
 ### Not implemented:
- * audio (in study)
- * gui (planned)
- * window (replaced by TGE)
+ * audio - use tge-audio instead (WIP)
+ * gui - use tge-nuklear instead (WIP)
+ * window - replaced by TGE runtime
 
 ## Implementation
 See example at [G3N examples](https://github.com/Thommil/tge-examples/tree/master/plugins/tge-g3n)
